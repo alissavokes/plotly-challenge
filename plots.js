@@ -16,30 +16,44 @@ d3.json("data/samples.json").then(function(data){
         console.log(otuLabels)
 
         //only need top 10 otu values for individual
-        let otuTopValues = sampleValues.slice(0, 10)
-        let otuTopIDs = otuIDs.slice(0,10)
-        let otuTopLabels = otuLabels.slice(0,10)
+        //reverse so that they are in descending order
+        let otuTopValues = sampleValues.slice(0, 10).reverse()
+        let otuTopIDs = otuIDs.slice(0,10).reverse()
+        let otuTopLabels = otuLabels.slice(0,10).reverse()
+        //rename otu ids
+        otuTopIDs = otuTopIDs.map(d=> "OTU " + d)
+
+
         console.log(otuTopValues, otuTopIDs, otuTopLabels)
 
         //create trace for horizontal plot
-        let trace = {
+        let barTrace = {
             x: otuTopValues,
             y: otuTopIDs,
             text: otuTopLabels,
+            marker:{
+                color: "rgb(14, 78, 123)"
+            },
             type: "bar",
             orientation: "h"
         }
 
         //create data from trace
-        let horizontalBarData = [trace]
+        let horizontalBarData = [barTrace]
 
         //create layout
-        let layout = {
+        let barLayout = {
             title: "Top 10 OTUs Found in Individual"
         }
 
         //plot horizontal bar chart
-        Plotly.newPlot("bar", horizontalBarData, layout)
+        Plotly.newPlot("bar", horizontalBarData, barLayout)
+
+        //layout for bubble chart
+        let 
+
+
+
     }
 
     function optionChanged(id){
