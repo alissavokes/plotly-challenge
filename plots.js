@@ -49,10 +49,29 @@ d3.json("data/samples.json").then(function(data){
         //plot horizontal bar chart
         Plotly.newPlot("bar", horizontalBarData, barLayout)
 
+        //create trace for bubble chart
+        let bubbleTrace = {
+            x: otuIDs,
+            y: sampleValues,
+            mode: "markers",
+            marker: {
+                size: sampleValues,
+                color: otuIDs
+            },
+            text: otuLabels
+        }
+
+        //create data from trace
+        let bubbleData = [bubbleTrace]
+
         //layout for bubble chart
-        let 
+        let bubbleLayout = {
+            xaxis:{title: "OTU ID"},
+            height: 600,
+            width: 1000
+        }
 
-
+        Plotly.newPlot("bubble", bubbleData, bubbleLayout)
 
     }
 
