@@ -3,21 +3,48 @@
 d3.json("data/samples.json").then(function(data){
     console.log(data)
 
-    function optionChanged(){
-        
-        
+    //function to update plots when id changes
+    function buildPlots(id){
+        //get sample values
+        let sampleValues = data.samples[0].sample_values
+        console.log(sampleValues)
+        //get otu ids
+        let otuIDs = data.samples[0].otu_ids
+        console.log(otuIDs)
+        //get otu labels
+        let otuLabels = data.samples[0].otu_labels
+        console.log(otuLabels)
 
-        //filter the demographic info based on the selected test subject id
-        //run chart for selected data with d3;
-        metadata = mydata.metadata.filter(/*find element with matching id of value*/)
-        plotObject = mydata.samples.filter(/*find sample with id === value*/)
+        //only need top 10 otu values for individual
+        let otuTopValues = sampleValues.slice(0, 10)
+        let otuTopIDs = otuIDs.slice(0,10)
+        let otuTopLabels = otuLabels.slice(0,10)
+        console.log(otuTopValues, otuTopIDs, otuTopLabels)
 
-        sortableData = plotObject.otu_ids.map((obj, index) => {
-            return {
-                otu_id:obj,
-                sample_value: plotObject.sample_values[index]
-            }
-        })
+        //create trace for horizontal plot
+        let trace = {
+            x: otuTopValues,
+            y: otuTopIDs,
+            text: otuTopLabels,
+            type: "bar",
+            orientation: "h"
+        }
+
+        //create data from trace
+        let horizontalBarData = [trace]
+
+        //create layout
+        let layout = {
+            title: "Top 10 OTUs Found in Individual"
+        }
+
+        //plot horizontal bar chart
+        Plotly.newPlot("bar", horizontalBarData, layout)
+    }
+
+    function optionChanged(id){
+        //update plot
+        buildPlots(id)
     }
     //create initial function for default page load
     function init(){
@@ -29,6 +56,9 @@ d3.json("data/samples.json").then(function(data){
                 .text(name)
                 .property("value")
         })
+
+        //call functions to display data/plots (default first name (940))
+        buildPlots(data.names[0])
     }
 
     init()
