@@ -1,18 +1,24 @@
 
-//read in json data
-d3.json("data/samples.json").then(function(data){
-    console.log(data)
+//function to update plots when id changes
+function buildPlots(id){
+    //read in json data
+    d3.json("data/samples.json").then(function(data){
 
-    //function to update plots when id changes
-    function buildPlots(id){
+        //console.log(data)
+        //filter samples for individual
+        let samples = data.samples
+        let filterResult = samples.filter(data=> data.id.toString()===id)[0]
+        console.log(filterResult)
+        
         //get sample values
-        let sampleValues = data.samples[0].sample_values
+        let sampleValues = filterResult.sample_values
         console.log(sampleValues)
+        
         //get otu ids
-        let otuIDs = data.samples[0].otu_ids
+        let otuIDs = filterResult.otu_ids
         console.log(otuIDs)
         //get otu labels
-        let otuLabels = data.samples[0].otu_labels
+        let otuLabels = filterResult.otu_labels
         console.log(otuLabels)
 
         //only need top 10 otu values for individual
@@ -68,22 +74,52 @@ d3.json("data/samples.json").then(function(data){
         let bubbleLayout = {
             xaxis:{title: "OTU ID"},
             height: 600,
-            width: 1000
+            width: 1000,
+            title: "OTU Density for Individual"
         }
 
         Plotly.newPlot("bubble", bubbleData, bubbleLayout)
+    })
+}
 
-    }
+//function to create demographic metadata
+function buildDemoInfo(id){
+    //read in json data
+    d3.json("data/samples.json").then(function(data){
+    
+        let metadata = data.metadata
+        console.log(metadata)
+        
+        //filter metadata info for individual
+        let filterResult = metadata.filter(data=> data.id.toString()===id)[0]
+        //select demo panel
+        let demoInfo = d3.select("#sample-metadata")
 
-    function optionChanged(id){
-        //update plot
-        buildPlots(id)
-    }
-    //create initial function for default page load
-    function init(){
-        //build select dropdown based on contents of data.names
-        let dropdownMenu = d3.select("#selDataset")
+        //clear demographic info panel before getting new info
+        demoInfo.html(" ")
+        
+        Object.entries(filterResult).forEach(key=> {
+            demoInfo.append("h5").text(key[0] + ": " + key[1])
+        })
+    })
 
+}
+
+function optionChanged(id){
+    //update plot
+    buildPlots(id)
+    //update demographic info
+    buildDemoInfo(id)
+}
+
+//create initial function for default page load
+function init(){
+    //build select dropdown based on contents of data.names
+    let dropdownMenu = d3.select("#selDataset")
+
+    //read in json data
+    d3.json("data/samples.json").then(function(data){
+    
         data.names.forEach(name => {
             dropdownMenu.append("option")
                 .text(name)
@@ -92,10 +128,10 @@ d3.json("data/samples.json").then(function(data){
 
         //call functions to display data/plots (default first name (940))
         buildPlots(data.names[0])
-    }
+        buildDemoInfo(data.names[0])
+    })
+}
 
-    init()
-})
-
+init()
 
 
